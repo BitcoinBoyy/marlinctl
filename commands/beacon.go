@@ -6,6 +6,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+var param1 string
 var Beacon = cli.Command{
 
 	Name:  "beacon",
@@ -22,8 +23,28 @@ var Beacon = cli.Command{
 		{
 			Name:  "start",
 			Usage: "start the beacon",
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:        "param1",
+					Value:       "t",
+					Usage:       "--param1 n",
+					Destination: &param1,
+				},
+			},
 			Action: func(c *cli.Context) error {
-				fmt.Println("started: ", c.Args().First())
+				processName := "beacon"
+				sampleCommand := "/bin/cat"
+				UpdateCommand(sampleCommand, sampleCommand+" -"+param1)
+				if IsProcessRunning(processName) {
+					if err := UpdateRunningProcess(processName); err != nil {
+						fmt.Println("error while starting process: ", processName, err)
+					}
+				} else {
+					if err := StartProcess(processName); err != nil {
+						fmt.Println("error while starting process: ", processName, err)
+					}
+				}
+				fmt.Println("started: ", processName)
 				return nil
 			},
 		},
@@ -31,7 +52,11 @@ var Beacon = cli.Command{
 			Name:  "stop",
 			Usage: "stop the beacon",
 			Action: func(c *cli.Context) error {
-				fmt.Println("stopped: ", c.Args().First())
+				processName := "beacon"
+				if err := StopProcess(processName); err != nil {
+					fmt.Println("error while stopping process: ", processName, err)
+				}
+				fmt.Println("stopped: ", processName)
 				return nil
 			},
 		},
