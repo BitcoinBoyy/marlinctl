@@ -1,8 +1,6 @@
 package commands
 
 import (
-	"fmt"
-
 	"github.com/urfave/cli/v2"
 
 	"marlin-cli/relay"
@@ -16,5 +14,6 @@ var Relay = cli.Command{
 		relay.DestroyCommand(),
 		relay.StartCommand(),
 		relay.StopCommand(),
+		relay.RestartCommand(),
 	},
 }
