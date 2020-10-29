@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	"github.com/urfave/cli/v2"
+
+	"marlin-cli/beacon"
 )
 
 var param1 string
@@ -12,14 +14,7 @@ var Beacon = cli.Command{
 	Name:  "beacon",
 	Usage: "create, start or stop beacon",
 	Subcommands: []*cli.Command{
-		{
-			Name:  "create",
-			Usage: "create a new beacon",
-			Action: func(c *cli.Context) error {
-				fmt.Println("created: ", c.Args().First())
-				return nil
-			},
-		},
+		beacon.CreateCommand(),
 		{
 			Name:  "start",
 			Usage: "start the beacon",

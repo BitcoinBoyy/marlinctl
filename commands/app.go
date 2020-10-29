@@ -16,5 +16,6 @@ var App = &cli.App{
 	Commands: []*cli.Command{
 		&Beacon,
 		&Relay,
-		&Gateway},
+		&Gateway,
+	},
 }
