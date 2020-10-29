@@ -72,6 +72,11 @@ func CreateCommand() *cli.Command {
 				return err
 			}
 
+			_, err = exec.Command("supervisorctl", "reread").Output()
+			if err != nil {
+				return err
+			}
+
 			_, err = exec.Command("supervisorctl", "add", "beacon").Output()
 			if err != nil {
 				return err
