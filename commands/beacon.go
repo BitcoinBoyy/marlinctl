@@ -6,7 +6,6 @@ import (
 	"marlin-cli/beacon"
 )
 
-var param1 string
 var Beacon = cli.Command{
 	Name:  "beacon",
 	Usage: "create, start or stop beacon",
