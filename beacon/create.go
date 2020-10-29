@@ -1,15 +1,16 @@
 package beacon
 
 import (
-	"text/template"
 	"os"
-	"os/user"
 	"net/http"
 	"io"
 	"errors"
 	"path/filepath"
+	"os/exec"
 
 	"github.com/urfave/cli/v2"
+
+	"marlin-cli/util"
 )
 
 
@@ -39,46 +40,39 @@ func CreateCommand() *cli.Command {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			usr, _ := user.Current()
-			if os.Geteuid() == 0 {
-				// Root, try to retrieve SUDO_USER if exists
-				if u := os.Getenv("SUDO_USER"); u != "" {
-					usr, _ = user.Lookup(u)
-				}
-			}
-
-			err := fetch("https://storage.googleapis.com/marlin-artifacts/configs/beacon.conf", usr.HomeDir+"/.marlin/ctl/configs/beacon.conf")
+			// User details
+			usr, err := util.GetUser()
 			if err != nil {
 				return err
 			}
+
+			// Beacon executable
 			err = fetch("https://storage.googleapis.com/marlin-artifacts/bin/beacon", usr.HomeDir+"/.marlin/ctl/bin/beacon")
 			if err != nil {
 				return err
 			}
 
-			t, err := template.ParseFiles(usr.HomeDir+"/.marlin/ctl/configs/beacon.conf")
-			// t, err := template.ParseFiles("./configs/beacon.conf")
+			// Beacon config
+			err = fetch("https://storage.googleapis.com/marlin-artifacts/configs/beacon.conf", usr.HomeDir+"/.marlin/ctl/configs/beacon.conf")
 			if err != nil {
 				return err
 			}
 
-			f, err := os.Create("/etc/supervisor/conf.d/beacon.conf")
+			err = util.TemplatePlace(
+				usr.HomeDir+"/.marlin/ctl/configs/beacon.conf",
+				"/etc/supervisor/conf.d/beacon.conf",
+				struct {
+					Program, User, UserHome string
+					DiscoveryAddr, HeartbeatAddr, BeaconAddr *string
+				} {
+					"beacon", usr.Username, usr.HomeDir, discovery_addr, heartbeat_addr, beacon_addr,
+				},
+			)
 			if err != nil {
 				return err
 			}
 
-			err = t.Execute(f, struct {
-				Program, User, UserHome string
-				DiscoveryAddr, HeartbeatAddr, BeaconAddr *string
-			} {
-				"beacon", usr.Username, usr.HomeDir, discovery_addr, heartbeat_addr, beacon_addr,
-			})
-			f.Close()
-			if err != nil {
-				return err
-			}
-
-			out, err := exec.Command("sudo", "supervisorctl", "reread", "beacon").Output()
+			_, err = exec.Command("sudo", "supervisorctl", "reread", "beacon").Output()
 			if err != nil {
 				return err
 			}
