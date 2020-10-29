@@ -47,13 +47,13 @@ func CreateCommand() *cli.Command {
 			}
 
 			// Beacon executable
-			err = fetch("https://storage.googleapis.com/marlin-artifacts/bin/beacon", usr.HomeDir+"/.marlin/ctl/bin/beacon")
+			err = fetch("https://storage.googleapis.com/marlin-artifacts/bin/beacon", usr.HomeDir+"/.marlin/ctl/bin/beacon", usr.Username, true)
 			if err != nil {
 				return err
 			}
 
 			// Beacon config
-			err = fetch("https://storage.googleapis.com/marlin-artifacts/configs/beacon.conf", usr.HomeDir+"/.marlin/ctl/configs/beacon.conf")
+			err = fetch("https://storage.googleapis.com/marlin-artifacts/configs/beacon.conf", usr.HomeDir+"/.marlin/ctl/configs/beacon.conf", usr.Username, false)
 			if err != nil {
 				return err
 			}
@@ -72,7 +72,7 @@ func CreateCommand() *cli.Command {
 				return err
 			}
 
-			_, err = exec.Command("sudo", "supervisorctl", "reread", "beacon").Output()
+			_, err = exec.Command("supervisorctl", "add", "beacon").Output()
 			if err != nil {
 				return err
 			}
@@ -82,8 +82,9 @@ func CreateCommand() *cli.Command {
 	}
 }
 
-func fetch(url, path string) error {
-	err := os.MkdirAll(filepath.Dir(path), os.ModePerm)
+func fetch(url, path, usr string, isExecutable bool) error {
+	// Create dir
+	_, err := exec.Command("sudo", "-u", usr, "mkdir", "-p", filepath.Dir(path)).Output()
 	if err != nil {
 		return err
 	}
@@ -102,9 +103,24 @@ func fetch(url, path string) error {
 	if err != nil {
 		return err
 	}
-	defer f.Close()
 
 	_, err = io.Copy(f, resp.Body)
+	f.Close()
+	if err != nil {
+		return err
+	}
+
+	// Perms
+	_, err = exec.Command("chown", usr+":"+usr, path).Output()
+	if err != nil {
+		return err
+	}
+
+	if isExecutable {
+		err = os.Chmod(path, 0755)
+	} else {
+		err = os.Chmod(path, 0644)
+	}
 	if err != nil {
 		return err
 	}
