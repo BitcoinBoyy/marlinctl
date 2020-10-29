@@ -19,11 +19,18 @@ func CreateCommand() *cli.Command {
 	var discovery_addr *string
 	var heartbeat_addr *string
 	var beacon_addr *string
+	var program string
 
 	return &cli.Command{
 		Name:  "create",
 		Usage: "create a new beacon",
 		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:        "program",
+				Usage:       "--program <NAME>",
+				Value:       "beacon",
+				Destination: &program,
+			},
 			&cli.StringFlag{
 				Name:        "discovery-addr",
 				Usage:       "--discovery-addr <IP:PORT>",
@@ -41,7 +48,7 @@ func CreateCommand() *cli.Command {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			out, _ := exec.Command("sudo", "supervisorctl", "status", "beacon").Output()
+			out, _ := exec.Command("sudo", "supervisorctl", "status", program).Output()
 			if !strings.Contains(string(out), "no such process") {
 				// Already exists
 				return errors.New("Already exists")
@@ -67,12 +74,12 @@ func CreateCommand() *cli.Command {
 
 			err = util.TemplatePlace(
 				usr.HomeDir+"/.marlin/ctl/configs/beacon.conf",
-				"/etc/supervisor/conf.d/beacon.conf",
+				"/etc/supervisor/conf.d/"+program+".conf",
 				struct {
 					Program, User, UserHome string
 					DiscoveryAddr, HeartbeatAddr, BeaconAddr *string
 				} {
-					"beacon", usr.Username, usr.HomeDir, discovery_addr, heartbeat_addr, beacon_addr,
+					program, usr.Username, usr.HomeDir, discovery_addr, heartbeat_addr, beacon_addr,
 				},
 			)
 			if err != nil {
@@ -84,7 +91,7 @@ func CreateCommand() *cli.Command {
 				return err
 			}
 
-			_, err = exec.Command("supervisorctl", "add", "beacon").Output()
+			_, err = exec.Command("supervisorctl", "add", program).Output()
 			if err != nil {
 				return err
 			}
