@@ -14,17 +14,6 @@ var Relay = cli.Command{
 	Subcommands: []*cli.Command{
 		relay.CreateCommand(),
 		relay.StartCommand(),
-		{
-			Name:  "stop",
-			Usage: "stop the relay",
-			Action: func(c *cli.Context) error {
-				processName := "relay"
-				if err := StopProcess(processName); err != nil {
-					fmt.Println("error while stopping process: ", processName, err)
-				}
-				fmt.Println("stopped: ", processName)
-				return nil
-			},
-		},
+		relay.StopCommand(),
 	},
 }
