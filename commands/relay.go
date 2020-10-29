@@ -4,21 +4,15 @@ import (
 	"fmt"
 
 	"github.com/urfave/cli/v2"
+
+	"marlin-cli/relay"
 )
 
 var Relay = cli.Command{
-
 	Name:  "relay",
 	Usage: "create, start or stop relay",
 	Subcommands: []*cli.Command{
-		{
-			Name:  "create",
-			Usage: "create a new relay",
-			Action: func(c *cli.Context) error {
-				fmt.Println("created: ", c.Args().First())
-				return nil
-			},
-		},
+		relay.CreateCommand(),
 		{
 			Name:  "start",
 			Usage: "start the relay",
