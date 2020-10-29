@@ -13,6 +13,7 @@ var Relay = cli.Command{
 	Usage: "create, start or stop relay",
 	Subcommands: []*cli.Command{
 		relay.CreateCommand(),
+		relay.DestroyCommand(),
 		relay.StartCommand(),
 		relay.StopCommand(),
 	},
