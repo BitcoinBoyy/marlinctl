@@ -78,6 +78,11 @@ func CreateCommand() *cli.Command {
 				return err
 			}
 
+			out, err := exec.Command("sudo", "supervisorctl", "reread", "beacon").Output()
+			if err != nil {
+				return err
+			}
+
 			return nil
 		},
 	}
