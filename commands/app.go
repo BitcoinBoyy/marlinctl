@@ -6,6 +6,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+var param1 string
 var App = &cli.App{
 	Name:  "marlin-cli",
 	Usage: "",

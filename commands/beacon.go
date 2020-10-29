@@ -11,6 +11,7 @@ var Beacon = cli.Command{
 	Usage: "create, start or stop beacon",
 	Subcommands: []*cli.Command{
 		beacon.CreateCommand(),
+		beacon.DestroyCommand(),
 		beacon.StartCommand(),
 		beacon.StopCommand(),
 		beacon.RestartCommand(),
