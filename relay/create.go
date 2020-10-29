@@ -7,6 +7,7 @@ import (
 	"errors"
 	"path/filepath"
 	"os/exec"
+	"strings"
 
 	"github.com/urfave/cli/v2"
 
@@ -63,6 +64,12 @@ func CreateCommand() *cli.Command {
 			},
 		},
 		Action: func(c *cli.Context) error {
+			out, _ := exec.Command("sudo", "supervisorctl", "status", "relay").Output()
+			if !strings.Contains(string(out), "no such process") {
+				// Already exists
+				return errors.New("Already exists")
+			}
+
 			// User details
 			usr, err := util.GetUser()
 			if err != nil {
