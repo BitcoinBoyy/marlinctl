@@ -3,6 +3,7 @@ package beacon
 import (
 	"os/exec"
 	"strings"
+	"errors"
 
 	"github.com/urfave/cli/v2"
 )
@@ -16,8 +17,7 @@ func DestroyCommand() *cli.Command {
 		Action: func(c *cli.Context) error {
 			out, _ := exec.Command("sudo", "supervisorctl", "status", "beacon").Output()
 			if strings.Contains(string(out), "no such process") {
-				// Already destroyed
-				return nil
+				return errors.New("Not found")
 			}
 
 			_, err := exec.Command("sudo", "supervisorctl", "stop", "beacon").Output()
