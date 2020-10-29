@@ -1,8 +1,6 @@
 package commands
 
 import (
-	"fmt"
-
 	"github.com/urfave/cli/v2"
 
 	"marlin-cli/beacon"
@@ -16,17 +14,6 @@ var Beacon = cli.Command{
 	Subcommands: []*cli.Command{
 		beacon.CreateCommand(),
 		beacon.StartCommand(),
-		{
-			Name:  "stop",
-			Usage: "stop the beacon",
-			Action: func(c *cli.Context) error {
-				processName := "beacon"
-				if err := StopProcess(processName); err != nil {
-					fmt.Println("error while stopping process: ", processName, err)
-				}
-				fmt.Println("stopped: ", processName)
-				return nil
-			},
-		},
+		beacon.StopCommand(),
 	},
 }
