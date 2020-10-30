@@ -9,10 +9,12 @@ import (
 	"io"
 )
 
-func Fetch(url, path, usr string, isExecutable bool) error {
+func Fetch(url, path, usr string, isExecutable bool, overwrite bool) error {
 	// Check if already exists
-	if _, err := os.Stat(path); !os.IsNotExist(err) {
-		return nil
+	if !overwrite {
+		if _, err := os.Stat(path); !os.IsNotExist(err) {
+			return nil
+		}
 	}
 
 	// Create dir

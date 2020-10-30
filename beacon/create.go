@@ -57,13 +57,13 @@ func CreateCommand() *cli.Command {
 			}
 
 			// Beacon executable
-			err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/bin/beacon", usr.HomeDir+"/.marlin/ctl/bin/beacon", usr.Username, true)
+			err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/bin/beacon", usr.HomeDir+"/.marlin/ctl/bin/beacon", usr.Username, true, false)
 			if err != nil {
 				return err
 			}
 
 			// Beacon config
-			err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/configs/beacon.conf", usr.HomeDir+"/.marlin/ctl/configs/beacon.conf", usr.Username, false)
+			err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/configs/beacon.conf", usr.HomeDir+"/.marlin/ctl/configs/beacon.conf", usr.Username, false, false)
 			if err != nil {
 				return err
 			}

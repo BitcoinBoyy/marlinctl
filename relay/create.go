@@ -73,13 +73,13 @@ func CreateCommand() *cli.Command {
 			}
 
 			// relay executable
-			err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/bin/relay", usr.HomeDir+"/.marlin/ctl/bin/relay", usr.Username, true)
+			err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/bin/relay", usr.HomeDir+"/.marlin/ctl/bin/relay", usr.Username, true, false)
 			if err != nil {
 				return err
 			}
 
 			// relay config
-			err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/configs/relay.conf", usr.HomeDir+"/.marlin/ctl/configs/relay.conf", usr.Username, false)
+			err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/configs/relay.conf", usr.HomeDir+"/.marlin/ctl/configs/relay.conf", usr.Username, false, false)
 			if err != nil {
 				return err
 			}
