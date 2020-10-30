@@ -102,6 +102,11 @@ func CreateCommand() *cli.Command {
 }
 
 func fetch(url, path, usr string, isExecutable bool) error {
+	// Check if already exists
+	if _, err := os.Stat(path); !os.IsNotExist(err) {
+		return nil
+	}
+
 	// Create dir
 	_, err := exec.Command("sudo", "-u", usr, "mkdir", "-p", filepath.Dir(path)).Output()
 	if err != nil {
