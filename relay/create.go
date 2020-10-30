@@ -1,11 +1,7 @@
 package relay
 
 import (
-	"os"
-	"net/http"
-	"io"
 	"errors"
-	"path/filepath"
 	"os/exec"
 	"strings"
 
@@ -77,13 +73,13 @@ func CreateCommand() *cli.Command {
 			}
 
 			// relay executable
-			err = fetch("https://storage.googleapis.com/marlin-artifacts/bin/relay", usr.HomeDir+"/.marlin/ctl/bin/relay", usr.Username, true)
+			err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/bin/relay", usr.HomeDir+"/.marlin/ctl/bin/relay", usr.Username, true)
 			if err != nil {
 				return err
 			}
 
 			// relay config
-			err = fetch("https://storage.googleapis.com/marlin-artifacts/configs/relay.conf", usr.HomeDir+"/.marlin/ctl/configs/relay.conf", usr.Username, false)
+			err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/configs/relay.conf", usr.HomeDir+"/.marlin/ctl/configs/relay.conf", usr.Username, false)
 			if err != nil {
 				return err
 			}
@@ -120,55 +116,4 @@ func CreateCommand() *cli.Command {
 			return nil
 		},
 	}
-}
-
-func fetch(url, path, usr string, isExecutable bool) error {
-	// Check if already exists
-	if _, err := os.Stat(path); !os.IsNotExist(err) {
-		return nil
-	}
-
-	// Create dir
-	_, err := exec.Command("sudo", "-u", usr, "mkdir", "-p", filepath.Dir(path)).Output()
-	if err != nil {
-		return err
-	}
-
-	resp, err := http.Get(url)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		return errors.New("Fetch error")
-	}
-
-	f, err := os.Create(path)
-	if err != nil {
-		return err
-	}
-
-	_, err = io.Copy(f, resp.Body)
-	f.Close()
-	if err != nil {
-		return err
-	}
-
-	// Perms
-	_, err = exec.Command("chown", usr+":"+usr, path).Output()
-	if err != nil {
-		return err
-	}
-
-	if isExecutable {
-		err = os.Chmod(path, 0755)
-	} else {
-		err = os.Chmod(path, 0644)
-	}
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
