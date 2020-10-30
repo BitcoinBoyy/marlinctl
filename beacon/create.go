@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os/exec"
 	"strings"
+	"runtime"
 
 	"github.com/urfave/cli/v2"
 
@@ -57,7 +58,7 @@ func CreateCommand() *cli.Command {
 			}
 
 			// Beacon executable
-			err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/bin/beacon", usr.HomeDir+"/.marlin/ctl/bin/beacon", usr.Username, true, false)
+			err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/bin/beacon-"+runtime.GOOS+"-"+runtime.GOARCH, usr.HomeDir+"/.marlin/ctl/bin/beacon", usr.Username, true, false)
 			if err != nil {
 				return err
 			}
