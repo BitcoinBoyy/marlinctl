@@ -16,9 +16,9 @@ import (
 
 
 func CreateCommand() *cli.Command {
-	var discovery_addr *string
-	var heartbeat_addr *string
-	var beacon_addr *string
+	var discovery_addr string
+	var heartbeat_addr string
+	var beacon_addr string
 	var program string
 
 	return &cli.Command{
@@ -34,17 +34,17 @@ func CreateCommand() *cli.Command {
 			&cli.StringFlag{
 				Name:        "discovery-addr",
 				Usage:       "--discovery-addr <IP:PORT>",
-				Destination: discovery_addr,
+				Destination: &discovery_addr,
 			},
 			&cli.StringFlag{
 				Name:        "heartbeat-addr",
 				Usage:       "--heartbeat-addr <IP:PORT>",
-				Destination: heartbeat_addr,
+				Destination: &heartbeat_addr,
 			},
 			&cli.StringFlag{
 				Name:        "beacon-addr",
 				Usage:       "--beacon-addr <IP:PORT>",
-				Destination: beacon_addr,
+				Destination: &beacon_addr,
 			},
 		},
 		Action: func(c *cli.Context) error {
@@ -77,7 +77,7 @@ func CreateCommand() *cli.Command {
 				"/etc/supervisor/conf.d/"+program+".conf",
 				struct {
 					Program, User, UserHome string
-					DiscoveryAddr, HeartbeatAddr, BeaconAddr *string
+					DiscoveryAddr, HeartbeatAddr, BeaconAddr string
 				} {
 					program, usr.Username, usr.HomeDir, discovery_addr, heartbeat_addr, beacon_addr,
 				},
