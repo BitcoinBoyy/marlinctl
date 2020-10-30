@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os/exec"
 	"strings"
+	"runtime"
 
 	"github.com/urfave/cli/v2"
 
@@ -12,7 +13,7 @@ import (
 
 
 func CreateCommand() *cli.Command {
-	var discovery_addrs, heartbeat_addrs, datadir string
+	var chain, discovery_addrs, heartbeat_addrs, datadir string
 	var discovery_port, pubsub_port uint
 	var address, name string
 
@@ -20,6 +21,12 @@ func CreateCommand() *cli.Command {
 		Name:  "create",
 		Usage: "create a new relay",
 		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:        "chain",
+				Usage:       "--chain \"<CHAIN>\"",
+				Destination: &chain,
+				Required: true,
+			},
 			&cli.StringFlag{
 				Name:        "discovery-addrs",
 				Usage:       "--discovery-addrs \"<IP1:PORT1>,<IP2:PORT2>,...\"",
@@ -60,10 +67,22 @@ func CreateCommand() *cli.Command {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			out, _ := exec.Command("sudo", "supervisorctl", "status", "relay").Output()
+			program := chain+"_relay"
+
+			out, _ := exec.Command("sudo", "supervisorctl", "status", program).Output()
 			if !strings.Contains(string(out), "no such process") {
 				// Already exists
 				return errors.New("Already exists")
+			}
+
+			// Set up abci first
+			if abci, found := abciMap[chain]; found {
+				err := abci.Create(datadir)
+				if err != nil {
+					return err
+				}
+			} else {
+				return errors.New("Unrecognized chain")
 			}
 
 			// User details
@@ -73,27 +92,27 @@ func CreateCommand() *cli.Command {
 			}
 
 			// relay executable
-			err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/bin/relay", usr.HomeDir+"/.marlin/ctl/bin/relay", usr.Username, true, false)
+			err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/bin/"+program+"-"+runtime.GOOS+"-"+runtime.GOARCH, usr.HomeDir+"/.marlin/ctl/bin/"+program, usr.Username, true, false)
 			if err != nil {
 				return err
 			}
 
 			// relay config
-			err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/configs/relay.conf", usr.HomeDir+"/.marlin/ctl/configs/relay.conf", usr.Username, false, false)
+			err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/configs/"+program+".conf", usr.HomeDir+"/.marlin/ctl/configs/"+program+".conf", usr.Username, false, false)
 			if err != nil {
 				return err
 			}
 
 			err = util.TemplatePlace(
-				usr.HomeDir+"/.marlin/ctl/configs/relay.conf",
-				"/etc/supervisor/conf.d/relay.conf",
+				usr.HomeDir+"/.marlin/ctl/configs/"+program+".conf",
+				"/etc/supervisor/conf.d/"+program+".conf",
 				struct {
 					Program, User, UserHome string
 					DiscoveryAddrs, HeartbeatAddrs, Datadir string
 					DiscoveryPort, PubsubPort uint
 					Address, Name string
 				} {
-					"relay", usr.Username, usr.HomeDir,
+					program, usr.Username, usr.HomeDir,
 					discovery_addrs, heartbeat_addrs, datadir,
 					discovery_port, pubsub_port,
 					address, name,
@@ -108,7 +127,7 @@ func CreateCommand() *cli.Command {
 				return err
 			}
 
-			_, err = exec.Command("supervisorctl", "add", "relay").Output()
+			_, err = exec.Command("supervisorctl", "add", program).Output()
 			if err != nil {
 				return err
 			}
