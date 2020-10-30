@@ -17,8 +17,8 @@ import (
 
 func CreateCommand() *cli.Command {
 	var discovery_addrs, heartbeat_addrs, datadir string
-	var discovery_port, pubsub_port *uint
-	var address, name *string
+	var discovery_port, pubsub_port uint
+	var address, name string
 
 	return &cli.Command{
 		Name:  "create",
@@ -45,22 +45,22 @@ func CreateCommand() *cli.Command {
 			&cli.UintFlag{
 				Name:        "discovery-port",
 				Usage:       "--discovery-port <PORT>",
-				Destination: discovery_port,
+				Destination: &discovery_port,
 			},
 			&cli.UintFlag{
 				Name:        "pubsub-port",
 				Usage:       "--pubsub-port <PORT>",
-				Destination: pubsub_port,
+				Destination: &pubsub_port,
 			},
 			&cli.StringFlag{
 				Name:        "address",
 				Usage:       "--address \"0x...\"",
-				Destination: address,
+				Destination: &address,
 			},
 			&cli.StringFlag{
 				Name:        "name",
 				Usage:       "--name \"<NAME>\"",
-				Destination: name,
+				Destination: &name,
 			},
 		},
 		Action: func(c *cli.Context) error {
@@ -94,8 +94,8 @@ func CreateCommand() *cli.Command {
 				struct {
 					Program, User, UserHome string
 					DiscoveryAddrs, HeartbeatAddrs, Datadir string
-					DiscoveryPort, PubsubPort *uint
-					Address, Name *string
+					DiscoveryPort, PubsubPort uint
+					Address, Name string
 				} {
 					"relay", usr.Username, usr.HomeDir,
 					discovery_addrs, heartbeat_addrs, datadir,
@@ -123,6 +123,11 @@ func CreateCommand() *cli.Command {
 }
 
 func fetch(url, path, usr string, isExecutable bool) error {
+	// Check if already exists
+	if _, err := os.Stat(path); !os.IsNotExist(err) {
+		return nil
+	}
+
 	// Create dir
 	_, err := exec.Command("sudo", "-u", usr, "mkdir", "-p", filepath.Dir(path)).Output()
 	if err != nil {
