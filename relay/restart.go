@@ -6,7 +6,6 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-
 func RestartCommand() *cli.Command {
 	return &cli.Command{
 		Name:  "restart",

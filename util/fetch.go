@@ -1,12 +1,12 @@
 package util
 
 import (
+	"errors"
+	"io"
+	"net/http"
 	"os"
 	"os/exec"
-	"net/http"
-	"errors"
 	"path/filepath"
-	"io"
 )
 
 func Fetch(url, path, usr string, isExecutable bool, overwrite bool) error {

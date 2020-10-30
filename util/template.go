@@ -1,10 +1,9 @@
 package util
 
 import (
-	"text/template"
 	"os"
+	"text/template"
 )
-
 
 func TemplatePlace(src, dst string, data interface{}) error {
 	t, err := template.ParseFiles(src)

@@ -3,14 +3,13 @@ package relay
 import (
 	"errors"
 	"os/exec"
-	"strings"
 	"runtime"
+	"strings"
 
 	"github.com/urfave/cli/v2"
 
 	"marlin-cli/util"
 )
-
 
 func CreateCommand() *cli.Command {
 	var chain, discovery_addrs, heartbeat_addrs, datadir string
@@ -25,25 +24,25 @@ func CreateCommand() *cli.Command {
 				Name:        "chain",
 				Usage:       "--chain \"<CHAIN>\"",
 				Destination: &chain,
-				Required: true,
+				Required:    true,
 			},
 			&cli.StringFlag{
 				Name:        "discovery-addrs",
 				Usage:       "--discovery-addrs \"<IP1:PORT1>,<IP2:PORT2>,...\"",
 				Destination: &discovery_addrs,
-				Required: true,
+				Required:    true,
 			},
 			&cli.StringFlag{
 				Name:        "heartbeat-addrs",
 				Usage:       "--heartbeat-addrs \"<IP1:PORT1>,<IP2:PORT2>,...\"",
 				Destination: &heartbeat_addrs,
-				Required: true,
+				Required:    true,
 			},
 			&cli.StringFlag{
 				Name:        "datadir",
 				Usage:       "--datadir \"/path/to/datadir\"",
 				Destination: &datadir,
-				Required: true,
+				Required:    true,
 			},
 			&cli.UintFlag{
 				Name:        "discovery-port",
@@ -67,7 +66,7 @@ func CreateCommand() *cli.Command {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			program := chain+"_relay"
+			program := chain + "_relay"
 
 			out, _ := exec.Command("sudo", "supervisorctl", "status", program).Output()
 			if !strings.Contains(string(out), "no such process") {
@@ -107,11 +106,11 @@ func CreateCommand() *cli.Command {
 				usr.HomeDir+"/.marlin/ctl/configs/"+program+".conf",
 				"/etc/supervisor/conf.d/"+program+".conf",
 				struct {
-					Program, User, UserHome string
+					Program, User, UserHome                 string
 					DiscoveryAddrs, HeartbeatAddrs, Datadir string
-					DiscoveryPort, PubsubPort uint
-					Address, Name string
-				} {
+					DiscoveryPort, PubsubPort               uint
+					Address, Name                           string
+				}{
 					program, usr.Username, usr.HomeDir,
 					discovery_addrs, heartbeat_addrs, datadir,
 					discovery_port, pubsub_port,

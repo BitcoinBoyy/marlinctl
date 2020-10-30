@@ -1,10 +1,9 @@
 package util
 
-import(
+import (
 	"os"
 	"os/user"
 )
-
 
 func GetUser() (*user.User, error) {
 	usr, err := user.Current()

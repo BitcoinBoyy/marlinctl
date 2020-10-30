@@ -3,14 +3,13 @@ package beacon
 import (
 	"errors"
 	"os/exec"
-	"strings"
 	"runtime"
+	"strings"
 
 	"github.com/urfave/cli/v2"
 
 	"marlin-cli/util"
 )
-
 
 func CreateCommand() *cli.Command {
 	var discovery_addr string
@@ -73,9 +72,9 @@ func CreateCommand() *cli.Command {
 				usr.HomeDir+"/.marlin/ctl/configs/beacon.conf",
 				"/etc/supervisor/conf.d/"+program+".conf",
 				struct {
-					Program, User, UserHome string
+					Program, User, UserHome                  string
 					DiscoveryAddr, HeartbeatAddr, BeaconAddr string
-				} {
+				}{
 					program, usr.Username, usr.HomeDir, discovery_addr, heartbeat_addr, beacon_addr,
 				},
 			)

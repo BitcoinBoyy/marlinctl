@@ -1,15 +1,15 @@
 package relay
 
 import (
+	"errors"
 	"os/exec"
 	"runtime"
-	"errors"
 	"strings"
 
 	"marlin-cli/util"
 )
 
-type EthAbci struct {}
+type EthAbci struct{}
 
 func (abci *EthAbci) Create(datadir string) error {
 	// User details
@@ -37,7 +37,7 @@ func (abci *EthAbci) Create(datadir string) error {
 		"/etc/supervisor/conf.d/"+program+".conf",
 		struct {
 			Program, User, UserHome, DataDir string
-		} {
+		}{
 			program, usr.Username, usr.HomeDir, datadir,
 		},
 	)

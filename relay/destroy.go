@@ -1,13 +1,12 @@
 package relay
 
 import (
+	"errors"
 	"os/exec"
 	"strings"
-	"errors"
 
 	"github.com/urfave/cli/v2"
 )
-
 
 func DestroyCommand() *cli.Command {
 	var chain string
@@ -20,11 +19,11 @@ func DestroyCommand() *cli.Command {
 				Name:        "chain",
 				Usage:       "--chain \"<CHAIN>\"",
 				Destination: &chain,
-				Required: true,
+				Required:    true,
 			},
 		},
 		Action: func(c *cli.Context) error {
-			program := chain+"_relay"
+			program := chain + "_relay"
 
 			out, _ := exec.Command("sudo", "supervisorctl", "status", program).Output()
 			if strings.Contains(string(out), "no such process") {

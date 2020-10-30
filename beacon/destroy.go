@@ -1,13 +1,12 @@
 package beacon
 
 import (
+	"errors"
 	"os/exec"
 	"strings"
-	"errors"
 
 	"github.com/urfave/cli/v2"
 )
-
 
 func DestroyCommand() *cli.Command {
 	var program string
