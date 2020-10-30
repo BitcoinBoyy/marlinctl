@@ -10,27 +10,36 @@ import (
 
 
 func DestroyCommand() *cli.Command {
+	var program string
+
 	return &cli.Command{
 		Name:  "destroy",
 		Usage: "destroy the beacon",
-		Flags: []cli.Flag{},
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:        "program",
+				Usage:       "--program <NAME>",
+				Value:       "beacon",
+				Destination: &program,
+			},
+		},
 		Action: func(c *cli.Context) error {
-			out, _ := exec.Command("sudo", "supervisorctl", "status", "beacon").Output()
+			out, _ := exec.Command("sudo", "supervisorctl", "status", program).Output()
 			if strings.Contains(string(out), "no such process") {
 				return errors.New("Not found")
 			}
 
-			_, err := exec.Command("sudo", "supervisorctl", "stop", "beacon").Output()
+			_, err := exec.Command("sudo", "supervisorctl", "stop", program).Output()
 			if err != nil {
 				return err
 			}
 
-			_, err = exec.Command("sudo", "supervisorctl", "remove", "beacon").Output()
+			_, err = exec.Command("sudo", "supervisorctl", "remove", program).Output()
 			if err != nil {
 				return err
 			}
 
-			_, err = exec.Command("sudo", "rm", "/etc/supervisor/conf.d/beacon.conf").Output()
+			_, err = exec.Command("sudo", "rm", "/etc/supervisor/conf.d/"+program+".conf").Output()
 			if err != nil {
 				return err
 			}
