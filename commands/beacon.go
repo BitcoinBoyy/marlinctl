@@ -3,7 +3,7 @@ package commands
 import (
 	"github.com/urfave/cli/v2"
 
-	"marlin-cli/beacon"
+	"marlinctl/beacon"
 )
 
 var Beacon = cli.Command{

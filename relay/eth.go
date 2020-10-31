@@ -6,7 +6,7 @@ import (
 	"runtime"
 	"strings"
 
-	"marlin-cli/util"
+	"marlinctl/util"
 )
 
 type EthAbci struct{}

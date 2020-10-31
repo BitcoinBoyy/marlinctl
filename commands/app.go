@@ -7,7 +7,7 @@ import (
 )
 
 var App = &cli.App{
-	Name:  "marlin-cli",
+	Name:  "marlinctl",
 	Usage: "",
 	Action: func(c *cli.Context) error {
 		fmt.Println("type help to see usage...")

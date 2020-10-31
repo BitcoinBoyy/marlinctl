@@ -8,7 +8,7 @@ import (
 
 	"github.com/urfave/cli/v2"
 
-	"marlin-cli/util"
+	"marlinctl/util"
 )
 
 func CreateCommand() *cli.Command {

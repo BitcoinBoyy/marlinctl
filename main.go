@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
-	"marlin-cli/commands"
+	"marlinctl/commands"
 	"os"
 )
 

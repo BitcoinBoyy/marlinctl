@@ -1,4 +1,4 @@
-module marlin-cli
+module marlinctl
 
 go 1.15
 

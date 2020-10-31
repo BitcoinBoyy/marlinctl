@@ -1,7 +1,7 @@
 GO=go
 GOBUILD=$(GO) build
 BINDIR=bin
-BINCLI=cli
+BINCLI=marlinctl
 BIN=$(BINDIR)/$(BINCLI)
 
 all:

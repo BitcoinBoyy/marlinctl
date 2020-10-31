@@ -3,7 +3,7 @@ package commands
 import (
 	"github.com/urfave/cli/v2"
 
-	"marlin-cli/relay"
+	"marlinctl/relay"
 )
 
 var Relay = cli.Command{
