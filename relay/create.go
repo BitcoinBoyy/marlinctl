@@ -17,7 +17,7 @@ func CreateCommand() *cli.Command {
 	var discovery_port, pubsub_port uint
 	var address, name string
 	var version string
-	var chain_version string
+	var abci_version string
 
 	return &cli.Command{
 		Name:  "create",
@@ -74,10 +74,10 @@ func CreateCommand() *cli.Command {
 				Destination: &version,
 			},
 			&cli.StringFlag{
-				Name:        "chain-version",
-				Usage:       "--chain-version <NUMBER>",
+				Name:        "abci-version",
+				Usage:       "--abci-version <NUMBER>",
 				Value:       "latest",
-				Destination: &chain_version,
+				Destination: &abci_version,
 			},
 		},
 		Action: func(c *cli.Context) error {
@@ -91,7 +91,7 @@ func CreateCommand() *cli.Command {
 
 			// Set up abci first
 			if abci, found := abciMap[chain]; found {
-				err := abci.Create(datadir, chain_version)
+				err := abci.Create(datadir, abci_version)
 				if err != nil {
 					return err
 				}

@@ -66,7 +66,7 @@ func Fetch(url, path, usr string, isExecutable bool, overwrite bool) error {
 
 func FetchLatestVersion(configName string) (string, error) {
 
-	resp, err := http.Get("https://storage.googleapis.com/marlin-artifacts/bin/config.json")
+	resp, err := http.Get("https://storage.googleapis.com/marlin-artifacts/bin/versions.json")
 	if err != nil {
 		return "", err
 	}
