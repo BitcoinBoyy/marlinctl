@@ -2,6 +2,7 @@ package relay
 
 import (
 	"errors"
+	"fmt"
 	"os/exec"
 	"runtime"
 	"strings"
@@ -15,6 +16,8 @@ func CreateCommand() *cli.Command {
 	var chain, discovery_addrs, heartbeat_addrs, datadir string
 	var discovery_port, pubsub_port uint
 	var address, name string
+	var version string
+	var chain_version string
 
 	return &cli.Command{
 		Name:  "create",
@@ -64,6 +67,18 @@ func CreateCommand() *cli.Command {
 				Usage:       "--name \"<NAME>\"",
 				Destination: &name,
 			},
+			&cli.StringFlag{
+				Name:        "version",
+				Usage:       "--version <NUMBER>",
+				Value:       "latest",
+				Destination: &version,
+			},
+			&cli.StringFlag{
+				Name:        "chain-version",
+				Usage:       "--chain-version <NUMBER>",
+				Value:       "latest",
+				Destination: &chain_version,
+			},
 		},
 		Action: func(c *cli.Context) error {
 			program := chain + "_relay"
@@ -76,7 +91,7 @@ func CreateCommand() *cli.Command {
 
 			// Set up abci first
 			if abci, found := abciMap[chain]; found {
-				err := abci.Create(datadir)
+				err := abci.Create(datadir, chain_version)
 				if err != nil {
 					return err
 				}
@@ -90,31 +105,42 @@ func CreateCommand() *cli.Command {
 				return err
 			}
 
+			if version == "latest" {
+				fmt.Println(program, "fetching latest binaries...")
+				latestVersion, err := util.FetchLatestVersion(program)
+				if err != nil {
+					return err
+				}
+				version = latestVersion
+				fmt.Println(program, "latest binary version: ", latestVersion)
+			}
 			// relay executable
-			err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/bin/"+program+"-"+runtime.GOOS+"-"+runtime.GOARCH, usr.HomeDir+"/.marlin/ctl/bin/"+program, usr.Username, true, false)
+			err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/bin/"+program+"-"+runtime.GOOS+"-"+runtime.GOARCH+"-"+version, usr.HomeDir+"/.marlin/ctl/bin/"+program+"-"+version, usr.Username, true, false)
 			if err != nil {
 				return err
 			}
 
 			// relay config
-			err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/configs/"+program+".conf", usr.HomeDir+"/.marlin/ctl/configs/"+program+".conf", usr.Username, false, false)
+			err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/configs/"+program+"-"+version+".conf", usr.HomeDir+"/.marlin/ctl/configs/"+program+"-"+version+".conf", usr.Username, false, false)
 			if err != nil {
 				return err
 			}
 
 			err = util.TemplatePlace(
-				usr.HomeDir+"/.marlin/ctl/configs/"+program+".conf",
+				usr.HomeDir+"/.marlin/ctl/configs/"+program+"-"+version+".conf",
 				"/etc/supervisor/conf.d/"+program+".conf",
 				struct {
 					Program, User, UserHome                 string
 					DiscoveryAddrs, HeartbeatAddrs, Datadir string
 					DiscoveryPort, PubsubPort               uint
 					Address, Name                           string
+					Version                                 string
 				}{
 					program, usr.Username, usr.HomeDir,
 					discovery_addrs, heartbeat_addrs, datadir,
 					discovery_port, pubsub_port,
 					address, name,
+					version,
 				},
 			)
 			if err != nil {

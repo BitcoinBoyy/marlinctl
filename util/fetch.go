@@ -3,7 +3,6 @@ package util
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -33,7 +32,6 @@ func Fetch(url, path, usr string, isExecutable bool, overwrite bool) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		fmt.Println("status code:", resp.StatusCode)
 		return errors.New("Fetch error")
 	}
 
