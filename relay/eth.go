@@ -2,6 +2,7 @@ package relay
 
 import (
 	"errors"
+	"fmt"
 	"os/exec"
 	"runtime"
 	"strings"
@@ -11,7 +12,7 @@ import (
 
 type EthAbci struct{}
 
-func (abci *EthAbci) Create(datadir string) error {
+func (abci *EthAbci) Create(datadir string, version string) error {
 	// User details
 	usr, err := util.GetUser()
 	if err != nil {
@@ -20,25 +21,34 @@ func (abci *EthAbci) Create(datadir string) error {
 
 	program := "geth"
 
+	if version == "latest" {
+		fmt.Println(program, "fetching latest binaries...")
+		latestVersion, err := util.FetchLatestVersion(program)
+		if err != nil {
+			return err
+		}
+		version = latestVersion
+		fmt.Println(program, "latest binary version: ", latestVersion)
+	}
 	// geth executable
-	err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/bin/"+program+"-"+runtime.GOOS+"-"+runtime.GOARCH, usr.HomeDir+"/.marlin/ctl/bin/"+program, usr.Username, true, false)
+	err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/bin/"+program+"-"+version+"-"+runtime.GOOS+"-"+runtime.GOARCH, usr.HomeDir+"/.marlin/ctl/bin/"+program+"-"+version, usr.Username, true, false)
 	if err != nil {
 		return err
 	}
 
 	// geth config
-	err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/configs/"+program+".conf", usr.HomeDir+"/.marlin/ctl/configs/"+program+".conf", usr.Username, false, false)
+	err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/configs/"+program+"-"+version+".conf", usr.HomeDir+"/.marlin/ctl/configs/"+program+"-"+version+".conf", usr.Username, false, false)
 	if err != nil {
 		return err
 	}
 
 	err = util.TemplatePlace(
-		usr.HomeDir+"/.marlin/ctl/configs/"+program+".conf",
+		usr.HomeDir+"/.marlin/ctl/configs/"+program+"-"+version+".conf",
 		"/etc/supervisor/conf.d/"+program+".conf",
 		struct {
-			Program, User, UserHome, DataDir string
+			Program, User, UserHome, DataDir, Version string
 		}{
-			program, usr.Username, usr.HomeDir, datadir,
+			program, usr.Username, usr.HomeDir, datadir, version,
 		},
 	)
 	if err != nil {
