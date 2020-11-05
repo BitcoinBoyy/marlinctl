@@ -2,6 +2,7 @@ package beacon
 
 import (
 	"errors"
+	"fmt"
 	"os/exec"
 	"runtime"
 	"strings"
@@ -16,6 +17,7 @@ func CreateCommand() *cli.Command {
 	var heartbeat_addr string
 	var beacon_addr string
 	var program string
+	var version string
 
 	return &cli.Command{
 		Name:  "create",
@@ -42,6 +44,12 @@ func CreateCommand() *cli.Command {
 				Usage:       "--beacon-addr <IP:PORT>",
 				Destination: &beacon_addr,
 			},
+			&cli.StringFlag{
+				Name:        "version",
+				Usage:       "--version <NUMBER>",
+				Value:       "latest",
+				Destination: &version,
+			},
 		},
 		Action: func(c *cli.Context) error {
 			out, _ := exec.Command("sudo", "supervisorctl", "status", program).Output()
@@ -56,26 +64,36 @@ func CreateCommand() *cli.Command {
 				return err
 			}
 
+			if version == "latest" {
+				fmt.Println("beacon fetching latest binaries...")
+				latestVersion, err := util.FetchLatestVersion("beacon")
+				if err != nil {
+					return err
+				}
+				version = latestVersion
+				fmt.Println("beacon latest binary version: ", latestVersion)
+			}
 			// Beacon executable
-			err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/bin/beacon-"+runtime.GOOS+"-"+runtime.GOARCH, usr.HomeDir+"/.marlin/ctl/bin/beacon", usr.Username, true, false)
+			err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/bin/beacon-"+runtime.GOOS+"-"+runtime.GOARCH+"-"+version, usr.HomeDir+"/.marlin/ctl/bin/beacon-"+version, usr.Username, true, false)
 			if err != nil {
 				return err
 			}
 
 			// Beacon config
-			err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/configs/beacon.conf", usr.HomeDir+"/.marlin/ctl/configs/beacon.conf", usr.Username, false, false)
+			err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/configs/beacon-"+version+".conf", usr.HomeDir+"/.marlin/ctl/configs/beacon-"+version+".conf", usr.Username, false, false)
 			if err != nil {
 				return err
 			}
 
 			err = util.TemplatePlace(
-				usr.HomeDir+"/.marlin/ctl/configs/beacon.conf",
+				usr.HomeDir+"/.marlin/ctl/configs/beacon-"+version+".conf",
 				"/etc/supervisor/conf.d/"+program+".conf",
 				struct {
 					Program, User, UserHome                  string
 					DiscoveryAddr, HeartbeatAddr, BeaconAddr string
+					Version                                  string
 				}{
-					program, usr.Username, usr.HomeDir, discovery_addr, heartbeat_addr, beacon_addr,
+					program, usr.Username, usr.HomeDir, discovery_addr, heartbeat_addr, beacon_addr, version,
 				},
 			)
 			if err != nil {

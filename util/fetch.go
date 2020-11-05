@@ -1,8 +1,11 @@
 package util
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"os/exec"
@@ -30,6 +33,7 @@ func Fetch(url, path, usr string, isExecutable bool, overwrite bool) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
+		fmt.Println("status code:", resp.StatusCode)
 		return errors.New("Fetch error")
 	}
 
@@ -60,4 +64,32 @@ func Fetch(url, path, usr string, isExecutable bool, overwrite bool) error {
 	}
 
 	return nil
+}
+
+func FetchLatestVersion(configName string) (string, error) {
+
+	resp, err := http.Get("https://storage.googleapis.com/marlin-artifacts/bin/config.json")
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return "", errors.New("Fetch error")
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	var result map[string]interface{}
+	if err := json.Unmarshal(body, &result); err != nil {
+		return "", err
+	}
+
+	val, found := result[configName]
+	if !found {
+		return "", errors.New("Invalid config name")
+	}
+	return val.(string), nil
 }
