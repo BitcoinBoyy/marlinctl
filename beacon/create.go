@@ -74,7 +74,7 @@ func CreateCommand() *cli.Command {
 				fmt.Println("beacon latest binary version: ", latestVersion)
 			}
 			// Beacon executable
-			err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/bin/beacon-"+runtime.GOOS+"-"+runtime.GOARCH+"-"+version, usr.HomeDir+"/.marlin/ctl/bin/beacon-"+version, usr.Username, true, false)
+			err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/bin/beacon-"+version+"-"+runtime.GOOS+"-"+runtime.GOARCH, usr.HomeDir+"/.marlin/ctl/bin/beacon-"+version, usr.Username, true, false)
 			if err != nil {
 				return err
 			}

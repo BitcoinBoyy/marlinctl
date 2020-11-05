@@ -31,7 +31,7 @@ func (abci *EthAbci) Create(datadir string, version string) error {
 		fmt.Println(program, "latest binary version: ", latestVersion)
 	}
 	// geth executable
-	err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/bin/"+program+"-"+runtime.GOOS+"-"+runtime.GOARCH+"-"+version, usr.HomeDir+"/.marlin/ctl/bin/"+program+"-"+version, usr.Username, true, false)
+	err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/bin/"+program+"-"+version+"-"+runtime.GOOS+"-"+runtime.GOARCH, usr.HomeDir+"/.marlin/ctl/bin/"+program+"-"+version, usr.Username, true, false)
 	if err != nil {
 		return err
 	}
