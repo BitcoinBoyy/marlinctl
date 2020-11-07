@@ -32,16 +32,19 @@ func CreateCommand() *cli.Command {
 			&cli.StringFlag{
 				Name:        "discovery-addr",
 				Usage:       "--discovery-addr <IP:PORT>",
+				DefaultText: "127.0.0.1:8002",
 				Destination: &discovery_addr,
 			},
 			&cli.StringFlag{
 				Name:        "heartbeat-addr",
 				Usage:       "--heartbeat-addr <IP:PORT>",
+				DefaultText: "127.0.0.1:8003",
 				Destination: &heartbeat_addr,
 			},
 			&cli.StringFlag{
-				Name:        "beacon-addr",
-				Usage:       "--beacon-addr <IP:PORT>",
+				Name:        "bootstrap-addr",
+				Usage:       "--bootstrap-addr <IP:PORT>",
+				Aliases:     []string{"beacon-addr"},
 				Destination: &beacon_addr,
 			},
 			&cli.StringFlag{
