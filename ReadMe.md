@@ -1,41 +1,41 @@
 # Marlinctl
 
-Marlinctl provides a command line interface for setting up beacon and relay node of marlin network
+Marlinctl provides a command line interface for setting up the different components of the Marlin network.
 
 # Cloning
+
  ```sh
 $ git clone https://github.com/marlinprotocol/marlinctl.git
 ```
 
-
 # Building
-Prerequisites: go >= 1.15.1 and supervisorctl
+
+Prerequisites: go >= 1.15.1, make, supervisord, supervisorctl
+
+To build, run
 ```
-$ go build -o build/marlinctl
+$ make
 ```
+A `marlinctl` executable should be built inside the `bin` directory
+
+Note: The commands below assume you are in the same working directory as `marlinctl`.
 
 # Usage
-After building,
+
+Root access is needed to run commands, be sure to run it with sudo if you are not the root user.
+
+To get list of available commands, run
+
 ```
-$ cd build
+$ sudo ./marlinctl --help
 ```
-To get list of available commands: 
+
+The cli is fully explorable, so every subcommand at all depths has a `--help` option. For example, running
 ```
-$ sudo ./marlinctl help
+$ sudo ./marlinctl beacon --help
 ```
-To create, start or stop **Beacon**:
+will list the subcommands available w.r.t the beacon and running
 ```
-$ sudo ./marlinctl beacon command [command options] [arguments...]
+$ sudo ./marlinctl beacon create --help
 ```
-Check help to get information on each command:
-```
-$ sudo ./marlinctl beacon help
-```
-To create, start or stop **Relay**:
-```
-$ sudo ./marlinctl relay command [command options] [arguments...]
-```
-Check help to get information on each command:
-```
-$ sudo ./marlinctl relay help
-```
+will print the usage and the cli options available.
