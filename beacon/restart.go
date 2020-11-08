@@ -2,6 +2,7 @@ package beacon
 
 import (
 	"os/exec"
+	"fmt"
 
 	"github.com/urfave/cli/v2"
 )
@@ -16,6 +17,9 @@ func RestartCommand() *cli.Command {
 			if err != nil {
 				return err
 			}
+
+			output, _ := exec.Command("supervisorctl", "status").Output()
+			fmt.Print(string(output))
 
 			return nil
 		},

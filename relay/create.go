@@ -157,6 +157,9 @@ func CreateCommand() *cli.Command {
 				return err
 			}
 
+			output, _ := exec.Command("supervisorctl", "status").Output()
+			fmt.Print(string(output))
+
 			return nil
 		},
 	}

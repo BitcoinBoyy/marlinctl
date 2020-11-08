@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os/exec"
 	"strings"
+	"fmt"
 
 	"github.com/urfave/cli/v2"
 )
@@ -47,6 +48,8 @@ func DestroyCommand() *cli.Command {
 			if err != nil {
 				return err
 			}
+
+			fmt.Println("beacon destroyed")
 
 			return nil
 		},

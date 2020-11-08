@@ -96,5 +96,7 @@ func (abci *EthAbci) Destroy() error {
 		return err
 	}
 
+	fmt.Println(program+" destroyed")
+
 	return nil
 }

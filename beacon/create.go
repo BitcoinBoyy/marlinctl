@@ -113,6 +113,9 @@ func CreateCommand() *cli.Command {
 				return err
 			}
 
+			output, err := exec.Command("supervisorctl", "status").Output()
+			fmt.Print(string(output))
+
 			return nil
 		},
 	}

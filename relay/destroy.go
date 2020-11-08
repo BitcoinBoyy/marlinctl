@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os/exec"
 	"strings"
+	"fmt"
 
 	"github.com/urfave/cli/v2"
 )
@@ -59,6 +60,8 @@ func DestroyCommand() *cli.Command {
 			} else {
 				return errors.New("Unrecognized chain")
 			}
+
+			fmt.Println(program+" destroyed")
 
 			return nil
 		},
