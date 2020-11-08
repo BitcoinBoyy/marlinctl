@@ -33,19 +33,19 @@ func CreateCommand() *cli.Command {
 				Name:        "discovery-addrs",
 				Usage:       "--discovery-addrs \"<IP1:PORT1>,<IP2:PORT2>,...\"",
 				Destination: &discovery_addrs,
-				Required:    true,
+				Value:       "127.0.0.1:8002",
 			},
 			&cli.StringFlag{
 				Name:        "heartbeat-addrs",
 				Usage:       "--heartbeat-addrs \"<IP1:PORT1>,<IP2:PORT2>,...\"",
 				Destination: &heartbeat_addrs,
-				Required:    true,
+				Value:       "127.0.0.1:8003",
 			},
 			&cli.StringFlag{
 				Name:        "datadir",
 				Usage:       "--datadir \"/path/to/datadir\"",
 				Destination: &datadir,
-				Required:    true,
+				Value:       "~/.ethereum/",
 			},
 			&cli.UintFlag{
 				Name:        "discovery-port",
