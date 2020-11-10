@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"runtime"
 	"strings"
+	"path/filepath"
 
 	"github.com/urfave/cli/v2"
 
@@ -105,6 +106,14 @@ func CreateCommand() *cli.Command {
 				return err
 			}
 
+			// Tilde expansion
+			if datadir == "~" {
+				datadir = usr.HomeDir
+			} else if strings.HasPrefix(datadir, "~/") {
+				datadir = filepath.Join(usr.HomeDir, datadir[2:])
+			}
+
+			// Version
 			if version == "latest" {
 				fmt.Println(program, "fetching latest binaries...")
 				latestVersion, err := util.FetchLatestVersion(program)
@@ -114,6 +123,7 @@ func CreateCommand() *cli.Command {
 				version = latestVersion
 				fmt.Println(program, "latest binary version: ", latestVersion)
 			}
+
 			// relay executable
 			err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/bin/"+program+"-"+version+"-"+runtime.GOOS+"-"+runtime.GOARCH, usr.HomeDir+"/.marlin/ctl/bin/"+program+"-"+version, usr.Username, true, false)
 			if err != nil {
