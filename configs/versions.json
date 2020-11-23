@@ -1,0 +1,9 @@
+{
+    "geth": "0.0.1",
+    "marlinctl": "1.0",
+    "beacon": "0.0.1",
+    "eth_relay": "0.0.1",
+    "gateway_eth": "0.0.1",
+    "dot_gateway": "0.0.1",
+    "dot_bridge": "0.0.1"
+}
