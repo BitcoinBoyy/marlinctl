@@ -4,7 +4,7 @@ import (
 	"github.com/urfave/cli/v2"
 
 	"marlinctl/gateways/dotGateway"
-	"marlinctl/gateways/tmGateway"
+	"marlinctl/gateways/irisGateway"
 )
 
 var Gateway = cli.Command{
@@ -12,6 +12,6 @@ var Gateway = cli.Command{
 	Usage: "create, start or stop gateways",
 	Subcommands: []*cli.Command{
 		&dotGateway.DotGateway,
-		&tmGateway.TmGateway,
+		&irisGateway.IrisGateway,
 	},
 }

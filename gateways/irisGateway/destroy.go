@@ -1,4 +1,4 @@
-package tmGateway
+package irisGateway
 
 import (
 	"errors"
@@ -15,7 +15,7 @@ func DestroyCommand() *cli.Command {
 		Usage: "destroy the gateway",
 		Flags: []cli.Flag{},
 		Action: func(c *cli.Context) error {
-			chain := "dot"
+			chain := "iris"
 			{
 				program := chain + "_gateway"
 

@@ -1,4 +1,4 @@
-package tmGateway
+package irisGateway
 
 import (
 	"errors"
@@ -13,7 +13,7 @@ import (
 )
 
 func CreateCommand() *cli.Command {
-	var bootstrap_addr string
+	var bootstrapAddr, listenPortPeer, peerIP, peerPort, rpcPort string
 	var version string
 
 	return &cli.Command{
@@ -21,10 +21,34 @@ func CreateCommand() *cli.Command {
 		Usage: "create a new gateway",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name:        "bootstrap-addr",
-				Usage:       "--bootstrap-addr \"<IP1:PORT1>\"",
-				Destination: &bootstrap_addr,
+				Name:        "bootstrapaddr",
+				Usage:       "--bootstrapaddr \"<IP1:PORT1>\"",
+				Destination: &bootstrapAddr,
 				Value:       "127.0.0.1:8002",
+			},
+			&cli.StringFlag{
+				Name:        "listenportpeer",
+				Usage:       "--listenportpeer \"PORT\"",
+				Destination: &listenPortPeer,
+				Value:       "59001",
+			},
+			&cli.StringFlag{
+				Name:        "peerip",
+				Usage:       "--peerip \"IP\"",
+				Destination: &listenPortPeer,
+				Value:       "127.0.0.1",
+			},
+			&cli.StringFlag{
+				Name:        "peerport",
+				Usage:       "--peerport \"PORT\"",
+				Destination: &peerPort,
+				Value:       "26656",
+			},
+			&cli.StringFlag{
+				Name:        "rpcport",
+				Usage:       "--rpcport \"PORT\"",
+				Destination: &rpcPort,
+				Value:       "26657",
 			},
 			&cli.StringFlag{
 				Name:        "version",
@@ -34,9 +58,10 @@ func CreateCommand() *cli.Command {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			chain := "dot"
+			chain := "iris"
 			program := chain + "_gateway"
 			bridge_program := chain + "_bridge"
+			keyfile := chain + "_keyfile"
 
 			out, _ := exec.Command("sudo", "supervisorctl", "status", program).Output()
 			if !strings.Contains(string(out), "no such process") {
@@ -64,6 +89,7 @@ func CreateCommand() *cli.Command {
 			// gateway executable
 			err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/bin/"+program+"-"+version+"-"+runtime.GOOS+"-"+runtime.GOARCH, usr.HomeDir+"/.marlin/ctl/bin/"+program+"-"+version, usr.Username, true, false)
 			if err != nil {
+				fmt.Println("Caught here")
 				return err
 			}
 
@@ -73,15 +99,25 @@ func CreateCommand() *cli.Command {
 				return err
 			}
 
+			// gateway keyfile
+			err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/configs/"+keyfile+"-"+version+".json", usr.HomeDir+"/.marlin/ctl/configs/"+keyfile+"-"+version+".json", usr.Username, false, false)
+			if err != nil {
+				return err
+			}
+
 			err = util.TemplatePlace(
 				usr.HomeDir+"/.marlin/ctl/configs/"+program+"-"+version+".conf",
 				"/etc/supervisor/conf.d/"+program+".conf",
 				struct {
 					Program, User, UserHome string
-					Version                 string
+					GatewayVersion, KeyfileVersion string
+					Listenportpeer, Peerip string
+					Peerport, Rpcport      string
 				}{
 					program, usr.Username, usr.HomeDir,
-					version,
+					version, version,
+					listenPortPeer, peerIP,
+					peerPort, rpcPort,
 				},
 			)
 			if err != nil {
@@ -109,7 +145,7 @@ func CreateCommand() *cli.Command {
 					Version                 string
 				}{
 					bridge_program, usr.Username, usr.HomeDir,
-					bootstrap_addr,
+					bootstrapAddr,
 					version,
 				},
 			)
