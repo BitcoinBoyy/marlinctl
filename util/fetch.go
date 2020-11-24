@@ -20,7 +20,7 @@ func Fetch(url, path, usr string, isExecutable bool, overwrite bool) error {
 	}
 
 	// Create dir
-	_, err := exec.Command("mkdir", "-p", filepath.Dir(path)).Output()
+	_, err := exec.Command("sudo", "-u", usr, "mkdir", "-p", filepath.Dir(path)).Output()
 	if err != nil {
 		return err
 	}
