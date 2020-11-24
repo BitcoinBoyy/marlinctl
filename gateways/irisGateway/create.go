@@ -35,7 +35,7 @@ func CreateCommand() *cli.Command {
 			&cli.StringFlag{
 				Name:        "peerip",
 				Usage:       "--peerip \"IP\"",
-				Destination: &listenPortPeer,
+				Destination: &peerIP,
 				Value:       "127.0.0.1",
 			},
 			&cli.StringFlag{
@@ -142,7 +142,7 @@ func CreateCommand() *cli.Command {
 				struct {
 					Program, User, UserHome string
 					BootstrapAddr           string
-					Version                 string
+					BridgeVersion                 string
 				}{
 					bridge_program, usr.Username, usr.HomeDir,
 					bootstrapAddr,

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -13,7 +12,6 @@ import (
 )
 
 func Fetch(url, path, usr string, isExecutable bool, overwrite bool) error {
-	fmt.Println("Fetching", url, path, usr)
 	// Check if already exists
 	if !overwrite {
 		if _, err := os.Stat(path); !os.IsNotExist(err) {
@@ -26,24 +24,20 @@ func Fetch(url, path, usr string, isExecutable bool, overwrite bool) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("DBG")
 	resp, err := http.Get(url)
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
-	fmt.Println("DBG")
 
 	if resp.StatusCode != 200 {
 		return errors.New("Fetch error")
 	}
-	fmt.Println("DBG")
 
 	f, err := os.Create(path)
 	if err != nil {
 		return err
 	}
-	fmt.Println("DBG")
 
 	_, err = io.Copy(f, resp.Body)
 	f.Close()
