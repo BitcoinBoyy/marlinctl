@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"os/exec"
+	"path/filepath"
 	"runtime"
 	"strings"
-	"path/filepath"
 
 	"github.com/urfave/cli/v2"
 

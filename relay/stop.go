@@ -1,8 +1,8 @@
 package relay
 
 import (
-	"os/exec"
 	"fmt"
+	"os/exec"
 
 	"github.com/urfave/cli/v2"
 )

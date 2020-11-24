@@ -2,9 +2,9 @@ package beacon
 
 import (
 	"errors"
+	"fmt"
 	"os/exec"
 	"strings"
-	"fmt"
 
 	"github.com/urfave/cli/v2"
 )

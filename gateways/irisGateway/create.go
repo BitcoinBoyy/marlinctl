@@ -109,10 +109,10 @@ func CreateCommand() *cli.Command {
 				usr.HomeDir+"/.marlin/ctl/configs/"+program+"-"+version+".conf",
 				"/etc/supervisor/conf.d/"+program+".conf",
 				struct {
-					Program, User, UserHome string
+					Program, User, UserHome        string
 					GatewayVersion, KeyfileVersion string
-					Listenportpeer, Peerip string
-					Peerport, Rpcport      string
+					Listenportpeer, Peerip         string
+					Peerport, Rpcport              string
 				}{
 					program, usr.Username, usr.HomeDir,
 					version, version,
@@ -142,7 +142,7 @@ func CreateCommand() *cli.Command {
 				struct {
 					Program, User, UserHome string
 					BootstrapAddr           string
-					BridgeVersion                 string
+					BridgeVersion           string
 				}{
 					bridge_program, usr.Username, usr.HomeDir,
 					bootstrapAddr,
