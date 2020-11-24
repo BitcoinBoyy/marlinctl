@@ -24,6 +24,7 @@ func Fetch(url, path, usr string, isExecutable bool, overwrite bool) error {
 	if err != nil {
 		return err
 	}
+
 	resp, err := http.Get(url)
 	if err != nil {
 		return err
