@@ -7,5 +7,6 @@
     "dot_gateway": "0.0.1",
     "dot_bridge": "0.0.1",
     "iris_gateway": "0.0.1",
-    "iris_bridge": "0.0.1"
+	"iris_bridge": "0.0.1",
+	"near_gateway": "0.0.1"
 }

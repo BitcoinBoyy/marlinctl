@@ -84,7 +84,6 @@ func FetchLatestVersion(configName string) (string, error) {
 	if err := json.Unmarshal(body, &result); err != nil {
 		return "", err
 	}
-
 	val, found := result[configName]
 	if !found {
 		return "", errors.New("Invalid config name")
