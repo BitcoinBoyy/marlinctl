@@ -35,6 +35,7 @@ func CreateCommand() *cli.Command {
 		},
 		Action: func(c *cli.Context) error {
 			chain := "near"
+			fmt.Println(bootstrap_addr)
 			program := chain + "_gateway"
 
 			out, _ := exec.Command("sudo", "supervisorctl", "status", program).Output()
@@ -67,7 +68,8 @@ func CreateCommand() *cli.Command {
 			}
 
 			// gateway config
-			err = util.Fetch("https://storage.googleapis.com/marlin-artifacts/configs/"+program+"-"+version+".conf", usr.HomeDir+"/.marlin/ctl/configs/"+program+"-"+version+".conf", usr.Username, false, false)
+			err = util.Fetch(
+				"https://storage.googleapis.com/marlin-artifacts/configs/"+program+"-"+version+".conf", usr.HomeDir+"/.marlin/ctl/configs/"+program+"-"+version+".conf",usr.Username,false,false)
 			if err != nil {
 				return err
 			}
@@ -77,9 +79,11 @@ func CreateCommand() *cli.Command {
 				"/etc/supervisor/conf.d/"+program+".conf",
 				struct {
 					Program, User, UserHome string
+					BootstrapAddr			string
 					Version                 string
 				}{
 					program, usr.Username, usr.HomeDir,
+					bootstrap_addr,
 					version,
 				},
 			)
