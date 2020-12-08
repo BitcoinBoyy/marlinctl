@@ -5,6 +5,7 @@ import (
 
 	"marlinctl/gateways/dotGateway"
 	"marlinctl/gateways/irisGateway"
+	"marlinctl/gateways/nearGateway"
 )
 
 var Gateway = cli.Command{
@@ -13,5 +14,6 @@ var Gateway = cli.Command{
 	Subcommands: []*cli.Command{
 		&dotGateway.DotGateway,
 		&irisGateway.IrisGateway,
+		&nearGateway.NearGateway,
 	},
 }
